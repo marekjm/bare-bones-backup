@@ -3,6 +3,13 @@
 SOURCE=$1
 
 
+CONFIG_FILE=backup.config
+if [[ ! -f $CONFIG_FILE ]]; then
+    echo "error: config file not found"
+    exit 1
+fi
+
+
 # ID of the GPG key used to encrypt the archive's blocks.
 # It can be obtainer by looking at the output of:
 #
@@ -15,7 +22,7 @@ SOURCE=$1
 # You need the 'ABCXYZ' part.
 # Keep in mind that you *MUST NOT* lose the key, or
 # you will not be able to decrypt your archives.
-GPG_KEY_ID=$(grep -P '^gpg_key=' backup.config | sed 's/gpg_key=//')
+GPG_KEY_ID=$(grep -P '^gpg_key=' $CONFIG_FILE | sed 's/gpg_key=//')
 if [[ $GPG_KEY_ID == '' ]]; then
     echo "error: no GPG key"
     exit 1
