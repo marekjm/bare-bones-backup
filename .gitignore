@@ -1,0 +1,8 @@
+*.tar
+*.block
+*.index
+
+*.config
+
+.*
+!.gitignore
