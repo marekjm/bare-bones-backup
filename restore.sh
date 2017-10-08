@@ -24,7 +24,7 @@ rm -f $RESTORE_FILE
 touch $RESTORE_FILE
 
 for EACH in $(cat $INDEX); do
-    gpg --decrypt $EACH.block >> $RESTORE_FILE
+    gpg --decrypt $EACH.block | gzip -c --decompress - >> $RESTORE_FILE
 done
 
 tar -xvf $RESTORE_FILE

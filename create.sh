@@ -69,7 +69,8 @@ for EACH in *.new.block; do
     HASHED=$(sha512sum $EACH | cut -d' ' -f1)
     echo "block: $EACH_ID -> $HASHED"
     if [[ ! -f $HASHED.block ]]; then
-        mv $EACH $HASHED.block
+        gzip -S .gz $EACH
+        mv $EACH.gz $HASHED.block
     else
         rm $EACH
     fi
