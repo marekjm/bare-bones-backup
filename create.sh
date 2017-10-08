@@ -3,7 +3,7 @@
 SOURCE=$1
 
 
-CONFIG_FILE=backup.config
+CONFIG_FILE=~/.backup.config
 if [[ ! -f $CONFIG_FILE ]]; then
     echo "error: config file not found"
     exit 1
