@@ -27,6 +27,16 @@ if [[ $GPG_KEY_ID == '' ]]; then
     echo "error: no GPG key"
     exit 1
 fi
+export GPG_KEY_ID
+
+
+STORAGE_USER=$(grep -P '^storage_user=' $CONFIG_FILE | sed 's/storage_user=//')
+STORAGE_HOST=$(grep -P '^storage_host=' $CONFIG_FILE | sed 's/storage_host=//')
+STORAGE_ROOT=$(grep -P '^storage_root=' $CONFIG_FILE | sed 's/storage_root=//')
+
+export STORAGE_USER
+export STORAGE_HOST
+export STORAGE_ROOT
 
 
 # This is the size of a block Amazon S3 supports.
@@ -47,6 +57,8 @@ TIMESTAMP=$(date '+%Y%m%dT%H%M%S')
 INDEX_FILE=archive.$TIMESTAMP.index
 echo -n '' > $INDEX_FILE
 
+export INDEX_FILE
+
 
 # Create blocks for the archive.
 # The current method is ridiculously inefficient, since to build a backup of N bytes, it needs
@@ -56,36 +68,15 @@ echo -n '' > $INDEX_FILE
 #       Then the amount of space needed would most probably be lower (it would be equal to the
 #       final amount of storage used, after deduplication and encryption).
 tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
-    --suffix-length $SUFFIX_LENGTH - ''
+    --suffix-length $SUFFIX_LENGTH --filter=./process-backup-block.sh - ''
 
 
-# Gather some data for statistics presentation later.
-BLOCKS_BEFORE_DEDUPLICATION=$(ls -1 *.block | wc -l)
-
-
-# Deduplicate and encrypt every new block created.
-for EACH in *.new.block; do
-    EACH_ID=$(echo "$EACH" | sed 's/\.new\.block$//')
-    HASHED=$(sha512sum $EACH | cut -d' ' -f1)
-    echo "block: $EACH_ID -> $HASHED"
-    if [[ ! -f $HASHED.block ]]; then
-        gzip -S .gz $EACH
-        mv $EACH.gz $HASHED.block
-    else
-        rm $EACH
-    fi
-    gpg --encrypt --recipient $GPG_KEY_ID $HASHED.block
-    mv $HASHED.block.gpg $HASHED.block
-    echo "$HASHED" >> $INDEX_FILE
-done
-echo ''
-
-
-# Gather some data for statistics presentation later.
-BLOCKS_AFTER_DEDUPLICATION=$(ls -1 *.block | wc -l)
+scp $INDEX_FILE $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
 
 
 # Present the summary of what happened.
+BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE)
+BLOCKS_AFTER_DEDUPLICATION=$(cat $INDEX_FILE | sort | uniq | wc -l)
 echo "blocks (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
 echo "blocks (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
 echo "index file: $INDEX_FILE"
