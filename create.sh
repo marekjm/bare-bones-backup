@@ -68,7 +68,7 @@ export INDEX_FILE
 #       Then the amount of space needed would most probably be lower (it would be equal to the
 #       final amount of storage used, after deduplication and encryption).
 tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
-    --suffix-length $SUFFIX_LENGTH --filter=./process-backup-block.sh - ''
+    --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
 
 
 scp $INDEX_FILE $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/

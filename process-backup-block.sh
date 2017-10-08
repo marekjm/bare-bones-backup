@@ -16,7 +16,7 @@ if [[ $(grep -P "$HASHED" $INDEX_FILE | wc -l) -eq 0 ]]; then
     gpg --encrypt --recipient $GPG_KEY_ID $HASHED.block
     mv $HASHED.block.gpg $HASHED.block
 
-    ./upload-backup-block.sh $HASHED &
+    $(dirname $0)/upload-backup-block.sh $HASHED
 else
     echo " reuse"
     rm $FILE
