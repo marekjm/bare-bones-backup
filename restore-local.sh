@@ -12,11 +12,17 @@ if [[ ! -f $INDEX ]]; then
     exit 1
 fi
 
+
+# Print out some reports.
 ALL_BLOCKS=$(wc -l $INDEX | awk '{ print $1 }')
 UNIQUE_BLOCKS=$(cat $INDEX | sort | uniq | wc -l)
 echo "blocks (all):    $ALL_BLOCKS"
 echo "blocks (unique): $UNIQUE_BLOCKS"
 
+
+# If we're restoring from local block repository then we can easily
+# check if required blocks exist.
+# Let's do this!
 for EACH in $(cat $INDEX); do
     if [[ ! -f "$EACH.block" ]]; then
         echo "error: missing block: $EACH"
