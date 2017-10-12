@@ -37,12 +37,8 @@ echo "blocks (unique): $UNIQUE_BLOCKS"
 
 # FIXME For now we operate under assumption that all required
 # blocks *exist*.
-# for EACH in $(cat $INDEX); do
-#     if [[ ! -f "$EACH.block" ]]; then
-#         echo "error: missing block: $EACH"
-#         exit 1
-#     fi
-# done
+# Maybe it would be a good idea to verify this assumption before
+# downloading and unpacking a potentially terabyte-sized archive.
 
 
 # Create a named pipe that will be used for communication between
