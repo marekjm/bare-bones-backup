@@ -77,6 +77,42 @@ To restore the backup use:
 
 ----
 
+### Details
+
+The basic idea is to create a big tar archive split into 128K blocks of encrypted data,
+deduplicate and compress it, and ship it off to some server.
+
+This program is written in such a way that it never sees a full tar file; it is always
+piping data, so the "working size" should not exceed a few megabytes for blocks.
+It needs, however, to have a full archive index available during both the creation of the
+backup (to store the order of blocks), and the restoration of the backup (to know which
+blocks should be fetched and extracted).
+
+While blocks should always be roughly ~128K in size, indexes can grow *big*.
+The size of the index is about 1 byte for every 1KB of backup data (before encryption,
+compression, and deduplication).
+Blocks of data are identified by their SHA512 sums.
+SHA512 has the convenient property that its hex digests are 128 bytes long, and
+map nicely to the 128KB block size.
+
+
+#### Pipelines
+
+When creating a backup:
+
+```
+{local machine} -> tar -> split -> SHA512 -> gzip -> GPG -> scp -> {remote machine}
+```
+
+When restoring a backup:
+
+```
+{remote machine} -> scp -> GPG -> gzip -> tar -> {local machine}
+```
+
+
+----
+
 ## License
 
 This is Free Software published under GNU GPL v3 or any later version of this license.
