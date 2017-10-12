@@ -30,13 +30,25 @@ for EACH in $(cat $INDEX); do
     fi
 done
 
-RESTORE_FILE=restore.tar
-rm -f $RESTORE_FILE
-touch $RESTORE_FILE
+
+# Create a named pipe that will be used for communication between
+# the fetch-and-decrypt and untar lines of execution.
+RESTORE_PIPE=/tmp/restore_pipe
+rm -f $RESTORE_PIPE
+mkfifo $RESTORE_PIPE
+
+
+# Attach tar extractor to a pipe and
+# run it in a subprocess.
+# tail is needed to avoid crashing on EOF after the first block is
+# decrypted and written to the pipe.
+tail --follow --bytes=4M $RESTORE_PIPE | tar -xv &
 
 for EACH in $(cat $INDEX); do
     echo "$EACH"
-    gpg --decrypt $EACH.block 2> /dev/null | gzip -c --decompress - >> $RESTORE_FILE
+    gpg --decrypt $EACH.block 2> /dev/null | gzip -c --decompress - > $RESTORE_PIPE
 done
 
-tar -xvf $RESTORE_FILE
+
+# Cleanup.
+rm $RESTORE_PIPE
