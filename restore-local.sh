@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-INDEX=$1
+set -e
 
+
+INDEX_ID=$1
+
+
+INDEX=archive.$INDEX_ID.index
 if [[ ! -f $INDEX ]]; then
     echo "error: index is not a file: $INDEX"
     exit 1
