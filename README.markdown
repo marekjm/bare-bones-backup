@@ -14,7 +14,7 @@ As it happens, you have a server with SSH access just sitting over
 there, doing nothing, and you have some spare GBs on it.
 
 This is exactly the scenario in which this repository becomes useful.
-It is the most bare-bones off-set backup script you will probably find.
+It is the most bare-bones off-site backup script you will probably find.
 
 **Pros**:
 
