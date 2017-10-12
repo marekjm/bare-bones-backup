@@ -2,7 +2,7 @@
 
 > *Embarassingly simple* backup solution.
 
-You want to have a backup your data, trust me.
+You want to have a backup of your data, trust me.
 Maybe you don't need it now, but you still want to have it.
 Just in case.
 
