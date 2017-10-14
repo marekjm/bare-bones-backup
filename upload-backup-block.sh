@@ -74,6 +74,7 @@ if [[ $B3_UPLOAD_BATCH_SIZE == '' ]]; then
     B3_UPLOAD_BATCH_SIZE=0
 fi
 
+cd $B3_TMP_DIR
 if [[ $B3_UPLOAD_BATCH_SIZE -eq 0 ]]; then
     upload_one_block $HASHED
 elif [[ $B3_UPLOAD_BATCH_SIZE -lt $(ls -1 *.block | wc -l) ]]; then

@@ -127,17 +127,25 @@ BLOCK_SIZE=128K
 SUFFIX_LENGTH=16
 
 
+B3_TMP_DIR="/tmp/b3_$B3_ARCHIVE_NAME""__$(dd if=/dev/urandom bs=1K count=1 2>/dev/null | sha1sum | cut -d' ' -f1)"
+mkdir -p $B3_TMP_DIR
+export B3_TMP_DIR
+
+
 # Create an empty index file.
 # It will be needed to recover the archive.
 TIMESTAMP=$(date '+%Y%m%dT%H%M%S')
-INDEX_FILE=$B3_ARCHIVE_NAME.$TIMESTAMP.index
+INDEX_NAME=$B3_ARCHIVE_NAME.$TIMESTAMP.index
+INDEX_FILE=$B3_TMP_DIR/$INDEX_NAME
 echo -n '' > $INDEX_FILE
 
 export INDEX_FILE
-echo "note: archive index: $INDEX_FILE"
+
 
 if [[ $B3_DEBUG == 'yes' ]]; then
-    echo "debug: upload batch size: $B3_UPLOAD_BATCH_SIZE"
+    echo "debug: upload batch size:    $B3_UPLOAD_BATCH_SIZE"
+    echo "debug: backup tmp directory: $B3_TMP_DIR"
+    echo "debug: archive index file:   $INDEX_FILE"
 fi
 
 
@@ -166,6 +174,7 @@ BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE | awk '{ print $1 }')
 BLOCKS_AFTER_DEDUPLICATION=$(cat $INDEX_FILE | sort | uniq | wc -l)
 echo "blocks (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
 echo "blocks (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
-echo "index file: $INDEX_FILE"
+echo "index name: $INDEX_NAME"
 
 rm $INDEX_FILE
+rm -r $B3_TMP_DIR

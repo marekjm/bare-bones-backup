@@ -20,24 +20,25 @@
 
 set -e
 
-cat > $FILE
+BLOCK_FILE=$B3_TMP_DIR/$FILE
+cat > $BLOCK_FILE
 
 BLOCK_ID=$(echo "$FILE" | sed 's/\.new\.block$//')
-HASHED=$(sha512sum $FILE | cut -d' ' -f1)
+HASHED=$(sha512sum $BLOCK_FILE | cut -d' ' -f1)
 echo -n "block: $BLOCK_ID -> $HASHED"
 
 if [[ $(grep -P "$HASHED" $INDEX_FILE | wc -l) -eq 0 ]]; then
     echo " compress"
-    gzip -S .gz $FILE
-    mv $FILE.gz $HASHED.block
+    gzip -S .gz $BLOCK_FILE
+    mv $BLOCK_FILE.gz $B3_TMP_DIR/$HASHED.block
 
-    gpg --encrypt --recipient $GPG_KEY_ID $HASHED.block
-    mv $HASHED.block.gpg $HASHED.block
+    gpg --encrypt --recipient $GPG_KEY_ID $B3_TMP_DIR/$HASHED.block
+    mv $B3_TMP_DIR/$HASHED.block.gpg $B3_TMP_DIR/$HASHED.block
 
     $(dirname $0)/upload-backup-block.sh $HASHED
 else
     echo " reuse"
-    rm $FILE
+    rm $BLOCK_FILE
 fi
 
 echo "$HASHED" >> $INDEX_FILE
