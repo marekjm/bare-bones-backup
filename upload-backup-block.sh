@@ -29,11 +29,11 @@ HASHED=$1
 # ONE-BLOCK UPLOADERS HERE
 #
 function upload_one_block_using_rsync {
-    rsync --verbose --ignore-existing $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    rsync --verbose --ignore-existing $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/blocks/
 }
 
 function upload_one_block_using_scp {
-    scp $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    scp $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/blocks/
 }
 
 function upload_one_block {
@@ -50,11 +50,11 @@ function upload_one_block {
 # ALL-BLOCK UPLOADERS HERE
 #
 function upload_all_blocks_using_rsync {
-    rsync --verbose --ignore-existing *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    rsync --verbose --ignore-existing *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/blocks/
 }
 
 function upload_all_blocks_using_scp {
-    scp *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    scp *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/blocks/
 }
 
 function upload_all_blocks {

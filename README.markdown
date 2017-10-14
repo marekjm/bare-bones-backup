@@ -56,6 +56,9 @@ storage_host=example.com
 storage_root=/home/backup/johndoe
 ```
 
+On the remote machine, in the `storage_root` directory you must create two subdirectories: `blocks` and
+`indexes`.
+
 
 ----
 
