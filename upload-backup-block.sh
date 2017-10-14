@@ -23,6 +23,26 @@ set -e
 HASHED=$1
 
 # TODO Maybe employ wput to support FTP?
+# TODO Add support for rsync
 
-scp $HASHED.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
-rm $HASHED.block
+function upload_one_block {
+    scp $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    rm $1.block
+}
+
+function upload_all_blocks {
+    scp *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    rm *.block
+}
+
+if [[ $B3_UPLOAD_BATCH_SIZE == '' ]]; then
+    B3_UPLOAD_BATCH_SIZE=0
+fi
+
+if [[ $B3_UPLOAD_BATCH_SIZE -eq 0 ]]; then
+    upload_one_block $HASHED
+elif [[ $B3_UPLOAD_BATCH_SIZE -lt $(ls -1 *.block | wc -l) ]]; then
+    upload_all_blocks
+elif [[ $B3_UPLOAD_FINISHING == 'yes' ]]; then
+    upload_all_blocks
+fi

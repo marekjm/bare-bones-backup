@@ -87,6 +87,10 @@ echo -n '' > $INDEX_FILE
 export INDEX_FILE
 echo "note: archive index: $INDEX_FILE"
 
+if [[ $B3_DEBUG == 'yes' ]]; then
+    echo "debug: upload batch size: $B3_UPLOAD_BATCH_SIZE"
+fi
+
 
 # Create blocks for the archive.
 # The current method is ridiculously inefficient, since to build a backup of N bytes, it needs
@@ -99,12 +103,20 @@ tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --
     --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
 
 
+# If using B3_UPLOAD_BATCH_SIZE some blocks have not be copied during archive creation.
+# These leftover blocks are copied here.
+EMPTY_SHA512='00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+B3_UPLOAD_FINISHING=yes $(dirname $0)/upload-backup-block.sh $EMPTY_SHA512
+
+
 scp $INDEX_FILE $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
 
 
 # Present the summary of what happened.
-BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE)
+BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE | awk '{ print $1 }')
 BLOCKS_AFTER_DEDUPLICATION=$(cat $INDEX_FILE | sort | uniq | wc -l)
 echo "blocks (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
 echo "blocks (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
 echo "index file: $INDEX_FILE"
+
+rm $INDEX_FILE
