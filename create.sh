@@ -66,6 +66,49 @@ export STORAGE_HOST
 export STORAGE_ROOT
 
 
+# B3_TRANSPORT_TOOL is a parameter passed via an environment variable.
+if [[ "$B3_TRANSPORT_TOOL" == '' ]]; then
+    B3_TRANSPORT_TOOL=scp
+fi
+if [[ $B3_TRANSPORT_TOOL == 'scp' ]]; then
+    # check for 'scp' support
+    if [[ ! $(command -v scp) ]]; then
+        echo "error: transport tool unavailable: 'scp'"
+        exit 1
+    fi
+elif [[ $B3_TRANSPORT_TOOL == 'rsync' ]]; then
+    # check for 'rsync' support
+    if [[ ! $(command -v rsync) ]]; then
+        echo "error: transport tool unavailable: 'rsync'"
+        exit 1
+    fi
+
+    # TODO
+    echo "error: transport tool not implemented: 'rsync'"
+    exit 1
+elif [[ $B3_TRANSPORT_TOOL == 'wput' ]]; then
+    # check for 'wput' support
+    if [[ ! $(command -v wput) ]]; then
+        echo "error: transport tool unavailable: 'wput'"
+        exit 1
+    fi
+
+    # TODO
+    echo "error: transport tool not implemented: 'wput'"
+    exit 1
+elif [[ $B3_TRANSPORT_TOOL == 'cp' ]]; then
+    # do nothing, 'cp' tool is always supported
+    true
+else
+    echo "error: unsupported transport tool: '$B3_TRANSPORT_TOOL'"
+    echo "note: supported transport tools are: scp, rsync, wput, cp"
+    echo "note: choose the one that will be able to copy blocks to your remote storage"
+    echo "note: the 'cp' tool is always available but able to copy blocks only between"
+    echo "note: local disks"
+    exit 1
+fi
+
+
 # This is the size of a block Amazon S3 supports.
 # We use it as a sane default.
 BLOCK_SIZE=128K
