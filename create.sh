@@ -76,6 +76,11 @@ if [[ $B3_TRANSPORT_TOOL == 'scp' ]]; then
         echo "error: transport tool unavailable: 'scp'"
         exit 1
     fi
+
+    if [[ ! $(ssh -q -oBatchMode=yes $STORAGE_USER@$STORAGE_HOST echo test) ]]; then
+        echo "error: failed to login to remote storage: $STORAGE_USER@$STORAGE_HOST"
+        exit 1
+    fi
 elif [[ $B3_TRANSPORT_TOOL == 'rsync' ]]; then
     # check for 'rsync' support
     if [[ ! $(command -v rsync) ]]; then
