@@ -65,7 +65,7 @@ To create the backup use:
 
 ```
 ]$ cd ~
-]$ B3_NAME=stuff create.sh ./Important/Stuff
+]$ B3_ARCHIVE_NAME=stuff create.sh ./Important/Stuff
 ```
 
 To restore the backup use:
