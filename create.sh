@@ -22,11 +22,11 @@
 # FIXME Support backups that span more than one directory/file.
 SOURCE=$1
 
-# NAME is the name of the backup: 'configs', 'documents', 'music', etc.
+# B3_NAME is the name of the backup: 'configs', 'documents', 'music', etc.
 # Choose something meaningful to make it easier for yourself when you will
 # be restoring the backups.
-if [[ "$NAME" == '' ]]; then
-    NAME=archive
+if [[ "$B3_NAME" == '' ]]; then
+    B3_NAME=archive
 fi
 
 
@@ -81,7 +81,7 @@ SUFFIX_LENGTH=16
 # Create an empty index file.
 # It will be needed to recover the archive.
 TIMESTAMP=$(date '+%Y%m%dT%H%M%S')
-INDEX_FILE=$NAME.$TIMESTAMP.index
+INDEX_FILE=$B3_NAME.$TIMESTAMP.index
 echo -n '' > $INDEX_FILE
 
 export INDEX_FILE
