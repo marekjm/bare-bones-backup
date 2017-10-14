@@ -64,14 +64,18 @@ storage_root=/home/backup/johndoe
 To create the backup use:
 
 ```
-]$ create.sh ~/Important/Stuff
+]$ cd ~
+]$ NAME=stuff create.sh ./Important/Stuff
 ```
 
 To restore the backup use:
 
 ```
 ]$ cd ~
-]$ restore-remote.sh 20171012T232347    # timestamp of the backup you want to restore
+   # First operand is the name of the backup, and
+   # the second is the timestamp of that backup you want to
+   # restore.
+]$ restore-remote.sh stuff 20171012T232347
 ```
 
 

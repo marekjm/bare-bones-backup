@@ -21,7 +21,10 @@
 set -e
 
 
-INDEX_ID=$1
+NAME=$1
+TIMESTAMP=$2
+
+INDEX_ID="$NAME.$TIMESTAMP"
 
 
 CONFIG_FILE=~/.backup.config
@@ -42,7 +45,7 @@ export STORAGE_ROOT
 
 # First, let's fetch the index.
 # It is needed to know what blocks we need to fetch.
-INDEX=archive.$INDEX_ID.index
+INDEX=$INDEX_ID.index
 scp $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/$INDEX .
 
 

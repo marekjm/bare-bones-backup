@@ -18,7 +18,16 @@
 #   along with Viua VM.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# SOURCE is the directory or file of which you want to backup.
+# FIXME Support backups that span more than one directory/file.
 SOURCE=$1
+
+# NAME is the name of the backup: 'configs', 'documents', 'music', etc.
+# Choose something meaningful to make it easier for yourself when you will
+# be restoring the backups.
+if [[ "$NAME" == '' ]]; then
+    NAME=archive
+fi
 
 
 CONFIG_FILE=~/.backup.config
@@ -72,10 +81,11 @@ SUFFIX_LENGTH=16
 # Create an empty index file.
 # It will be needed to recover the archive.
 TIMESTAMP=$(date '+%Y%m%dT%H%M%S')
-INDEX_FILE=archive.$TIMESTAMP.index
+INDEX_FILE=$NAME.$TIMESTAMP.index
 echo -n '' > $INDEX_FILE
 
 export INDEX_FILE
+echo "note: archive index: $INDEX_FILE"
 
 
 # Create blocks for the archive.
