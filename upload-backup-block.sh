@@ -23,18 +23,53 @@ set -e
 HASHED=$1
 
 # TODO Maybe employ wput to support FTP?
-# TODO Add support for rsync
+
+
+################################################################################
+# ONE-BLOCK UPLOADERS HERE
+#
+function upload_one_block_using_rsync {
+    rsync --verbose --ignore-existing $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+}
+
+function upload_one_block_using_scp {
+    scp $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+}
 
 function upload_one_block {
-    scp $1.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+    if [[ $B3_TRANSPORT_TOOL == 'scp' ]]; then
+        upload_one_block_using_scp $1
+    elif [[ $B3_TRANSPORT_TOOL == 'rsync' ]]; then
+        upload_one_block_using_rsync $1
+    fi
     rm $1.block
 }
 
-function upload_all_blocks {
+
+################################################################################
+# ALL-BLOCK UPLOADERS HERE
+#
+function upload_all_blocks_using_rsync {
+    rsync --verbose --ignore-existing *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+}
+
+function upload_all_blocks_using_scp {
     scp *.block $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/
+}
+
+function upload_all_blocks {
+    if [[ $B3_TRANSPORT_TOOL == 'scp' ]]; then
+        upload_all_blocks_using_scp $1
+    elif [[ $B3_TRANSPORT_TOOL == 'rsync' ]]; then
+        upload_all_blocks_using_rsync $1
+    fi
     rm *.block
 }
 
+
+################################################################################
+# ENTRY POINT HERE
+#
 if [[ $B3_UPLOAD_BATCH_SIZE == '' ]]; then
     B3_UPLOAD_BATCH_SIZE=0
 fi
