@@ -178,8 +178,8 @@ fi
 # Present the summary of what happened.
 BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE | awk '{ print $1 }')
 BLOCKS_AFTER_DEDUPLICATION=$(cat $INDEX_FILE | sort | uniq | wc -l)
-echo "blocks (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
-echo "blocks (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
+echo "blocks in this archive (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
+echo "blocks in this archive (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
 echo "index name: $INDEX_NAME"
 
 rm $INDEX_FILE
