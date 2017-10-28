@@ -156,17 +156,23 @@ fi
 # FIXME It would be great if there was a way to invoke a shell script after each finished "split".
 #       Then the amount of space needed would most probably be lower (it would be equal to the
 #       final amount of storage used, after deduplication and encryption).
-tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
-    --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
+if [[ $B3_DRY_RUN != 'true' ]]; then
+    tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
+        --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
+fi
 
 
 # If using B3_UPLOAD_BATCH_SIZE some blocks have not be copied during archive creation.
 # These leftover blocks are copied here.
 EMPTY_SHA512='00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-B3_UPLOAD_FINISHING=yes $(dirname $0)/upload-backup-block.sh $EMPTY_SHA512
+if [[ $B3_DRY_RUN != 'true' ]]; then
+    B3_UPLOAD_FINISHING=yes $(dirname $0)/upload-backup-block.sh $EMPTY_SHA512
+fi
 
 
-scp $INDEX_FILE $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/indexes/
+if [[ $B3_DRY_RUN != 'true' ]]; then
+    scp $INDEX_FILE $STORAGE_USER@$STORAGE_HOST:$STORAGE_ROOT/indexes/
+fi
 
 
 # Present the summary of what happened.
