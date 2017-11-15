@@ -151,6 +151,10 @@ if [[ $B3_DEBUG == 'yes' ]]; then
 fi
 
 
+LOGS_DIR=~/.local/log/b3
+mkdir -p $LOGS_DIR
+
+
 B3_BLOCK_COUNT_PRE_UPLOAD=$(ssh $STORAGE_USER@$STORAGE_HOST "cd $STORAGE_ROOT/blocks/ && find . -type f | wc -l")
 
 
@@ -179,12 +183,13 @@ BLOCKS_BEFORE_DEDUPLICATION=$(wc -l $INDEX_FILE | awk '{ print $1 }')
 BLOCKS_AFTER_DEDUPLICATION=$(cat $INDEX_FILE | sort | uniq | wc -l)
 B3_BLOCK_COUNT_POST_UPLOAD=$(ssh $STORAGE_USER@$STORAGE_HOST "cd $STORAGE_ROOT/blocks/ && find . -type f | wc -l")
 B3_NEW_BLOCKS=$(dc -e "$B3_BLOCK_COUNT_POST_UPLOAD $B3_BLOCK_COUNT_PRE_UPLOAD -p")
-echo "blocks in this archive (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION"
-echo "blocks in this archive (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION"
-echo "total blocks (pre upload):  $B3_BLOCK_COUNT_PRE_UPLOAD"
-echo "total blocks (post upload): $B3_BLOCK_COUNT_POST_UPLOAD"
-echo "new blocks: $B3_NEW_BLOCKS"
-echo "index name: $INDEX_NAME"
+touch $LOGS_DIR/$INDEX_NAME.log
+echo "blocks in this archive (before deduplication): $BLOCKS_BEFORE_DEDUPLICATION" | tee -a $LOGS_DIR/$INDEX_NAME.log
+echo "blocks in this archive (after deduplication):  $BLOCKS_AFTER_DEDUPLICATION" | tee -a $LOGS_DIR/$INDEX_NAME.log
+echo "total blocks (pre upload):  $B3_BLOCK_COUNT_PRE_UPLOAD" | tee -a $LOGS_DIR/$INDEX_NAME.log
+echo "total blocks (post upload): $B3_BLOCK_COUNT_POST_UPLOAD" | tee -a $LOGS_DIR/$INDEX_NAME.log
+echo "new blocks: $B3_NEW_BLOCKS" | tee -a $LOGS_DIR/$INDEX_NAME.log
+echo "index name: $INDEX_NAME" | tee -a $LOGS_DIR/$INDEX_NAME.log
 
 rm $INDEX_FILE
 rm -r $B3_TMP_DIR
