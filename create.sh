@@ -153,12 +153,6 @@ B3_BLOCK_COUNT_PRE_UPLOAD=$(ssh $STORAGE_USER@$STORAGE_HOST "cd $STORAGE_ROOT/bl
 
 
 # Create blocks for the archive.
-# The current method is ridiculously inefficient, since to build a backup of N bytes, it needs
-# at least (N + Tar header) bytes of free buffer space.
-#
-# FIXME It would be great if there was a way to invoke a shell script after each finished "split".
-#       Then the amount of space needed would most probably be lower (it would be equal to the
-#       final amount of storage used, after deduplication and encryption).
 if [[ $B3_DRY_RUN != 'true' ]]; then
     tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
         --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
