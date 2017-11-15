@@ -117,7 +117,9 @@ fi
 
 # This is the size of a block Amazon S3 supports.
 # We use it as a sane default.
-BLOCK_SIZE=128K
+if [[ $B3_BLOCK_SIZE == '' ]]; then
+    B3_BLOCK_SIZE=128K
+fi
 
 
 # 16 hexadecimal characters.
@@ -154,7 +156,7 @@ B3_BLOCK_COUNT_PRE_UPLOAD=$(ssh $STORAGE_USER@$STORAGE_HOST "cd $STORAGE_ROOT/bl
 
 # Create blocks for the archive.
 if [[ $B3_DRY_RUN != 'true' ]]; then
-    tar -cvf - $SOURCE | split --bytes $BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
+    tar -cvf - $SOURCE | split --bytes $B3_BLOCK_SIZE --additional-suffix .new.block --hex-suffixes=0 \
         --suffix-length $SUFFIX_LENGTH --filter=$(dirname $0)/process-backup-block.sh - ''
 fi
 
